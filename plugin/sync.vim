@@ -11,18 +11,10 @@ function Sync(transfer_type)
         let orig = expand("%:p")
         let dest = substitute(orig, g:sync_local, g:sync_remote, "")
 
-        if exists("g:sync_user")
-            let dest = g:sync_user . '@' . g:sync_server . ':' . dest
-        endif
-
         let msg = "Upload: " . orig . " -> " . dest
     elseif a:transfer_type == 'down'
         let dest = expand("%:p")
         let orig = substitute(dest, g:sync_local, g:sync_remote, "")
-
-        if exists("g:sync_user")
-            let orig = g:sync_user . '@' . g:sync_server . ':' . orig
-        endif
 
         let msg = "Download: " . dest . " <- " . orig
     endif
