@@ -12,7 +12,7 @@ function Sync(transfer_type)
         let dest = substitute(orig, g:sync_local, g:sync_remote, "")
 
         if exists("g:sync_user")
-            let dest = g:sync_user . '@' . g:sync_server . ':' . desc
+            let dest = g:sync_user . '@' . g:sync_server . ':' . dest
         endif
 
         let msg = "Upload: " . orig . " -> " . dest
