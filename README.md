@@ -1,4 +1,4 @@
-Plugin super simples em faze de desenvolvimento que utiliza o comando `scp` para
+Plugin super simples em fase de desenvolvimento que utiliza o comando `scp` para
 fazer download ou upload no arquivo que está sendo editado
 
 ### Configuração

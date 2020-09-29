@@ -40,6 +40,8 @@ function Sync(transfer_type)
 
     let output = system(command2exec)
 
+    redraw | echo
+
     if v:shell_error != 0
         echo output
     endif
