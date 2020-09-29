@@ -19,7 +19,13 @@ function Sync(transfer_type)
         let msg = "Download: " . dest . " <- " . orig
     endif
 
-    let command2exec  = ":!scp"
+    let command2exec = ""
+
+    if exists("g:sync_password")
+        let command2exec .= "sshpass -p'" . g:sync_password . "' "
+    endif
+
+    let command2exec .= "scp"
 
     if exists("g:sync_port")
         let command2exec .= " -P " . g:sync_port
@@ -31,7 +37,12 @@ function Sync(transfer_type)
     let command2exec .= ""
 
     echomsg msg
-    execute command2exec
+
+    let output = system(command2exec)
+
+    if v:shell_error != 0
+        echo output
+    endif
 endfunction
 
 command SyncUp call Sync('up')
