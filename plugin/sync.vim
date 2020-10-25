@@ -7,6 +7,8 @@ function Sync(transfer_type)
         return
     endif
 
+    let g:sync_transfer_type = a:transfer_type
+
     if g:sync_local[-1:] != '/' | let g:sync_local .= '/' | endif
     if g:sync_remote[-1:] != '/' | let g:sync_remote.= '/' | endif
 
@@ -14,12 +16,12 @@ function Sync(transfer_type)
         let orig = expand("%:p")
         let dest = substitute(orig, g:sync_local, g:sync_remote, "")
 
-        let msg = "Upload: " . orig . " -> " . dest
+        let msg = "Upload: -> " . dest
     elseif a:transfer_type == 'down'
         let dest = expand("%:p")
         let orig = substitute(dest, g:sync_local, g:sync_remote, "")
 
-        let msg = "Download: " . dest . " <- " . orig
+        let msg = "Download: <- " . orig
     endif
 
     let command2exec = ""
@@ -28,34 +30,52 @@ function Sync(transfer_type)
         let command2exec .= "sshpass -p'" . g:sync_password . "' "
     endif
 
-    let command2exec .= "scp"
+    let command2exec .= "rsync -a"
+
+    " SSH config
+    let command2exec .= " -e 'ssh"
+    let command2exec .= " -o controlmaster=auto"
+    let command2exec .= " -o controlpersist=yes"
+    let command2exec .= " -o controlpath=/tmp/ssh-%r@%h:%p"
 
     if exists("g:sync_port")
-        let command2exec .= " -P " . g:sync_port
+        let command2exec .= " -p " . g:sync_port
     endif
+
+    let command2exec .= "'"
 
     let command2exec .= " '" . orig . "'"
     let command2exec .= " '" . dest . "'"
 
     let command2exec .= ""
 
-    echomsg msg
+    function! s:handler(job_id, data, event_type)
+        if a:event_type == 'exit'
+            if a:data > 0
+                redraw | echo a:data
+            else
+                if g:sync_transfer_type == 'down'
+                    update | e
+                endif
 
-    let output = system(command2exec)
-
-    redraw | echo
-
-    if v:shell_error != 0
-        echo output
-    else
-        if a:transfer_type == 'down'
-            update | e
+                redraw | echo
+            endif
         endif
+    endfunction
+
+    let jobid = async#job#start(command2exec, {
+        \ 'on_exit': function('s:handler')
+        \ })
+
+    if jobid == 0
+       redraw | echomsg 'Fail sync'
     endif
+
+    redraw | echomsg msg
 endfunction
 
 function SyncConfig()
-    let local = expand("%:p:h") . '/'
+    let local = getcwd() . '/'
 
     let question = input(' Deseja configurar o sync no diretório a seguir? ' . local . ' [Yes|No]: ')
 
@@ -74,8 +94,12 @@ function SyncConfig()
     let sync_config  = ['let g:sync_local    = "' . local . '"']
     let sync_config += ['let g:sync_remote   = "' . remote . '"']
 
+    let g:sync_local = local
+    let g:sync_remote = remote
+
     if port
         let sync_config += ['let g:sync_port     = '. port]
+        let g:sync_port = port
     endif
 
     call writefile(sync_config, sync_file_config, 'a')
