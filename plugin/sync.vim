@@ -1,6 +1,10 @@
 if exists('g:loaded_sync') | finish | endif
 let g:loaded_sync = 1
 
+if !exists("g:sync_permission")
+    let g:sync_permission = "755"
+endif
+
 function Sync(transfer_type)
     if !exists("g:sync_local")
         echomsg "Sync não configurado"
@@ -31,6 +35,10 @@ function Sync(transfer_type)
     endif
 
     let command2exec .= "rsync -a"
+
+    if exists("g:sync_permission") && !empty(g:sync_permission)
+        let command2exec .= " --chmod=" . g:sync_permission
+    endif
 
     " SSH config
     let command2exec .= " -e 'ssh"
