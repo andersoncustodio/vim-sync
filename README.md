@@ -1,10 +1,11 @@
-Plugin super simples em fase de desenvolvimento que utiliza o comando `scp` para
-fazer download ou upload no arquivo que está sendo editado
+Super simple plugin in development phase that uses the `scp` command for
+Download or upload the file being edited.
 
-### Configuração
+### Configuration
     let g:sync_port   = 22
     let g:sync_local  = '/local/path'
     let g:sync_remote = 'user@server:/server/path'
+    let g:sync_permission = 755
 
-    " Utilize apenas se o mundo estiver acabando, sempre utilize chaves SSH
-    let g:sync_password = 'senha'
+    " Only use if the world is ending, always use SSH keys
+    let g:sync_password = 'Password'
