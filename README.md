@@ -1,4 +1,4 @@
-Super simple plugin in development phase that uses the `scp` command for
+Super simple plugin in development phase that uses the `rsync` command for
 Download or upload the file being edited.
 
 ### Configuration
