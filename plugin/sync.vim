@@ -1,10 +1,6 @@
 if exists('g:loaded_sync') | finish | endif
 let g:loaded_sync = 1
 
-if !exists("g:sync_permission")
-    let g:sync_permission = "755"
-endif
-
 function Sync(transfer_type)
     if !exists("g:sync_local")
         echomsg "Sync não configurado"
