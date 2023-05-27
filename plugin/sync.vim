@@ -3,7 +3,7 @@ let g:loaded_sync = 1
 
 function Sync(transfer_type)
     if !exists("g:sync_local")
-        echomsg "Sync não configurado"
+        echomsg "Sync has not been configured"
         return
     endif
 
@@ -35,6 +35,10 @@ function Sync(transfer_type)
     if exists("g:sync_permission") && !empty(g:sync_permission)
         let command2exec .= " --chmod=" . g:sync_permission
     endif
+
+    if exists("g:sync_auto_mkdir") && !empty(g:sync_auto_mkdir)
+        let command2exec .= " --mkpath"
+    end
 
     " SSH config
     let command2exec .= " -e 'ssh"
@@ -81,9 +85,9 @@ endfunction
 function SyncConfig()
     let local = getcwd() . '/'
 
-    let question = input(' Deseja configurar o sync no diretório a seguir? ' . local . ' [Yes|No]: ')
+    let question = input(' Do you want to set up Sync in the following directory? ' . local . ' [Yes|No]: ')
 
-    if question != "Yes" | redraw | echomsg 'Configuração do sync não foi relizada' | return | endif
+    if question != "Yes" | redraw | echomsg 'Sync configuration was not performed' | return | endif
 
     let remote = input('Remote: ')
 
